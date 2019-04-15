@@ -3,9 +3,14 @@ const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const JWT = require('jsonwebtoken');
+const passport = require('passport');
 
 // Load user Model
 const UserModel = require('../../models/User');
+
+//Load input validation
+const ValidateRegisterInput = require('../../validation/register');
+
 
 // @route GET api/user/test
 // @desc Tests user route
@@ -20,6 +25,12 @@ router.get('/test', (req, res) => {
 // @access Public
 
 router.post('/register', (req, res) => {
+    const { errors, isValid } = ValidateRegisterInput(req.body);
+
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
     UserModel.findOne({ email: req.body.email })
     .then((user) => {
         if (user) {
@@ -83,6 +94,13 @@ router.post('/login', (req, res) => {
             }
         });
     });
+});
+
+// @route POST api/user/current
+// @desc Returns current user
+// @access Private
+router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
+    res.json({msg: 'Success', user: req.user});
 });
 
 
