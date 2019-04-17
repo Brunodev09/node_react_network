@@ -23,6 +23,7 @@ const port = process.env.PORT || 3000;
 app.use(passport.initialize());
 
 //Passport config
+//Calling passport that returns a function and passing the object passport from this class as param of this returned function
 require('./config/passport')(passport);
 
 //Middlewares
